@@ -21,5 +21,5 @@ private:
     std::thread io_thread_;
     
     const double wheel_separation = 0.8;
-    const double wheel_radius = 0.245;
+    const double wheel_radius = 0.19;
 };

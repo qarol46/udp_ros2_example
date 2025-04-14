@@ -1,21 +1,24 @@
 #include "udp_robot/udp_client.hpp"
-#include "udp_robot/message.hpp"
 #include <rclcpp/rclcpp.hpp>
 
-int main(int argc, char ** argv) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <linear_vel_mm_s> <angular_vel_mrad_s>" << std::endl;
+int main(int argc, char** argv) {
+    if(argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <linear_vel_mm_s> <angular_vel_mrad_s>\n";
         return 1;
     }
 
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<UDPClient>();
+    auto client = std::make_shared<UDPClient>();
     
-    Message msg;
-    msg.linear_vel = std::stoi(argv[1]);   // Линейная скорость в мм/с
-    msg.angular_vel = std::stoi(argv[2]);  // Угловая скорость в мрад/с
+    try {
+        int16_t linear = std::stoi(argv[1]);
+        int16_t angular = std::stoi(argv[2]);
+        
+        client->send_message(linear, angular);
+    } catch(const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
     
-    node->send_message(msg);
     rclcpp::shutdown();
     return 0;
 }

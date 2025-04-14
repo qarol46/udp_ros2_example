@@ -9,18 +9,18 @@ UDPClient::UDPClient()
         asio::ip::address::from_string("127.0.0.1"), 12345);
 }
 
-void UDPClient::send_message(const Message& msg) {
+void UDPClient::send_message(int16_t linear_vel, int16_t angular_vel) {
+    Message msg;
+    msg.linear_vel = linear_vel;
+    msg.angular_vel = angular_vel;
+
     std::array<uint8_t, sizeof(Message)> send_buffer;
     std::memcpy(send_buffer.data(), &msg, sizeof(Message));
     
     socket_.async_send_to(
         asio::buffer(send_buffer), server_endpoint_,
         [this](const asio::error_code& error, size_t /*bytes_sent*/) {
-            if (error) {
-                RCLCPP_ERROR(this->get_logger(), "Send error: %s", error.message().c_str());
-                return;
-            }
-            this->start_receive();
+            if (!error) this->start_receive();
         }
     );
     
@@ -44,9 +44,9 @@ void UDPClient::handle_receive(const asio::error_code& error, size_t bytes_trans
         Message response;
         std::memcpy(&response, recv_buffer_.data(), sizeof(Message));
         
-        RCLCPP_INFO(this->get_logger(), 
-                   "Received wheel velocities: [%d, %d, %d | %d, %d, %d]",
-                   response.velocity[0], response.velocity[1], response.velocity[2],
+        RCLCPP_INFO(this->get_logger(), "Wheel velocities [L]: %d, %d, %d", 
+                   response.velocity[0], response.velocity[1], response.velocity[2]);
+        RCLCPP_INFO(this->get_logger(), "Wheel velocities [R]: %d, %d, %d",
                    response.velocity[3], response.velocity[4], response.velocity[5]);
         
         response_received_ = true;
