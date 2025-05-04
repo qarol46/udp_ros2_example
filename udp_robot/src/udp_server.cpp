@@ -8,10 +8,10 @@ UDPServer::UDPServer()
     socket_.open(asio::ip::udp::v4());
     asio::socket_base::reuse_address option(true);
     socket_.set_option(option);
-    socket_.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 12345));
+    socket_.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 8888));
     
     start_receive();
-    RCLCPP_INFO(this->get_logger(), "UDP Server started on port 12345");
+    RCLCPP_INFO(this->get_logger(), "UDP Server started on port 8888");
     io_thread_ = std::thread([this]() { io_context_.run(); });
 }
 

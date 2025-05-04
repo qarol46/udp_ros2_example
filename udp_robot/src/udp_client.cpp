@@ -5,8 +5,10 @@ UDPClient::UDPClient()
 : Node("udp_client"),
   socket_(io_context_) {
     socket_.open(asio::ip::udp::v4());
+    socket_.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), 8889));
+    RCLCPP_INFO(this->get_logger(), "Client bound to port: 8889");
     server_endpoint_ = asio::ip::udp::endpoint(
-        asio::ip::address::from_string("127.0.0.1"), 12345);
+        asio::ip::address::from_string("127.0.0.1"), 8888);
 }
 
 void UDPClient::send_message(int16_t linear_vel, int16_t angular_vel) {
